@@ -30,11 +30,10 @@ export default function Artwork({ pokemon }: { pokemon: Pokemon }) {
         <>
             <TabsLists items={Array.from(artwork.keys())} current={current}
                 handleClick={(e) => { setCurrent(e.currentTarget.value) }} />
-            <div className="flex px-4 bg-white">
-
-            <div className="flex items-center justify-center w-full h-auto max-w-2xs min-w-xs p-8 bg-card-secondary-background rounded-md">
-                <ImageWithLoader imageSrc={artwork.get(current) ?? imageNotFound} alt="Pokemon Artwork"/>
-            </div>
+            <div className="flex px-4 py-6 bg-white">
+                <div className="flex items-center justify-center w-full min-w-64 h-auto p-8 bg-card-secondary-background rounded-md">
+                    <ImageWithLoader imageSrc={artwork.get(current) ?? imageNotFound} alt="Pokemon Artwork" />
+                </div>
             </div>
 
 
