@@ -1,20 +1,21 @@
 import { useEffect, useId, useState } from "react";
 import { GEN_API_URL } from "../constants";
-import type { 
-    NamedAPIResource, 
-    ErrorState, 
-    Generation, 
-    PokemonSpecies, 
+import type {
+    NamedAPIResource,
+    Generation,
+    PokemonSpecies,
     Pokemon,
-PokedexCardData } from "../types";
+    PokedexCardData,
+} from "../types";
 import PageLoader from "../components/PageLoader";
-import FetchError from "../components/FetchError";
 import { getPokemonID } from "../helpers/formatters";
 import Pokedex from "../components/pokedex/Pokedex";
+import NotFoundPage from "./NotFoundPage";
 
 
 function getGenerationMap(data: NamedAPIResource[]) {
     const generation = new Map<string, string>();
+
     for (let i = 0; i < data.length; i++) {
         let genName = data[i].name.replace(/-/g, " ");
         genName = genName[0].toUpperCase() + genName.slice(1);
@@ -26,7 +27,7 @@ function getGenerationMap(data: NamedAPIResource[]) {
 
 
 export default function PokedexPage() {
-    const [error, setError] = useState<ErrorState | null>(null);
+    const [error, setError] = useState<boolean>(false);
     const [generation, setGenerations] = useState<Map<string, string> | null>(null);
     const [selectedGen, setSelectedGen] = useState<string>("");
     const [speciesURL, setSpeciesURL] = useState<string[]>([]);
@@ -38,7 +39,10 @@ export default function PokedexPage() {
 
     //Web page should display an error if the fetch fails.
     useEffect(() => {
-        fetch(GEN_API_URL)
+        const controller = new AbortController();
+        fetch(GEN_API_URL, {
+            signal: controller.signal
+        })
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`Error ${response.status} `);
@@ -53,13 +57,14 @@ export default function PokedexPage() {
             })
             .catch((err) => {
                 const error = err instanceof Error ? err : new Error(`Unexpected error`);
-
-                const errorType = {
-                    title: `Failed to fetch generations`,
-                    message: error.message,
-                };
-                setError(errorType);
+                if (error.name === `AbortError`) {
+                    return;
+                }
+                console.error(error)
+                setError(true);
             })
+
+        return () => controller.abort();
     }, []);
 
     //App should display an error if the fetch fails.
@@ -83,12 +88,11 @@ export default function PokedexPage() {
                 setSpeciesURL(species)
             }).catch((err) => {
                 const error = err instanceof Error ? err : new Error(`Unexpected error`);
-
-                const errorType = {
-                    title: `Failed to fetch pokedex url`,
-                    message: error.message,
-                };
-                setError(errorType);
+                if (error.name === `AbortError`) {
+                    return;
+                }
+                console.error(error);
+                setError(true);
             })
 
         return () => controller.abort();
@@ -112,17 +116,12 @@ export default function PokedexPage() {
                         });
 
                         if (!speciesResponse.ok) {
-                            const errorType = {
-                                title: `Failed to fetch species data`,
-                                message: `Species HTTP ${speciesResponse.status}`,
-                            }
-
+                            console.error(`Failed to fetch species data: ${speciesResponse.status}`)
                             return {
                                 isError: true,
                                 id: fallbackID,
                                 species: null,
-                                pokemon: null,
-                                error: errorType
+                                pokemon: null
                             };
                         }
 
@@ -130,18 +129,13 @@ export default function PokedexPage() {
                         const speciesData: PokemonSpecies = await speciesResponse.json();
                         const defaultVariety = speciesData.varieties.find((variety) => variety.is_default);
 
-                        if (!defaultVariety ) {
-                            const errorType = {
-                                title: `Failed to fetch default variety data`,
-                                message: `No default variety found for species ${speciesData.name}`,
-                            }
-
+                        if (!defaultVariety) {
+                            console.error(`No default variety found for species ${speciesData.name}`);
                             return {
                                 isError: true,
                                 id: fallbackID,
                                 species: speciesData,
-                                pokemon: null,
-                                error: errorType
+                                pokemon: null
                             };
                         }
 
@@ -152,17 +146,12 @@ export default function PokedexPage() {
                         );
 
                         if (!pokemonResponse.ok) {
-
-                            const errorType = {
-                                title: `Failed to fetch pokemon data`,
-                                message: `Pokemon HTTP ${pokemonResponse.status}`,
-                            }
+                            console.error(`Failed to fetch pokemon data: ${pokemonResponse.status}`)
                             return {
                                 isError: true,
                                 id: fallbackID,
                                 species: speciesData,
-                                pokemon: null,
-                                error: errorType
+                                pokemon: null
                             };
 
                         }
@@ -174,27 +163,23 @@ export default function PokedexPage() {
                             id: speciesData.id ?? fallbackID,
                             species: speciesData,
                             pokemon: pokemonData,
-                            error: null
                         };
                     } catch (err) {
 
                         const error = err instanceof Error ? err : new Error(`Unexpected error occurred`);
-                        const errorType = {
-                            title: `Failed to fetch data`,
-                            message: error.message,
-                        }
+                        console.error(`Error fetching data for species URL ${url}:`, error);
+                        
                         return {
                             isError: true,
                             id: fallbackID,
                             species: null,
-                            pokemon: null,
-                            error: errorType
+                            pokemon: null
                         };
                     }
                 })
 
             const results: PokedexCardData[] = await Promise.all(fetchPromises);
-            
+
             // Check if the fetch was aborted before updating the state
             if (controller.signal.aborted) {
                 return;
@@ -214,7 +199,7 @@ export default function PokedexPage() {
 
     if (error) {
         return (
-            <FetchError error={error} />);
+            <NotFoundPage />);
     }
     if (isGenerationLoading) {
         return (
@@ -228,14 +213,14 @@ export default function PokedexPage() {
             <div className="flex gap-2 text-xs">
                 <label htmlFor={selectVersion}>Select Generation: </label>
                 <select id={selectVersion}
-                className="px-1 border rounded-sm"
-                name={selectedGen}
-                value={selectedGen}
+                    className="px-1 border rounded-sm"
+                    name={selectedGen}
+                    value={selectedGen}
                     onChange={(e) => { setSelectedGen(e.target.value); }}>
                     {Array.from(generation.keys(), (gen) => <option key={gen}>{gen}</option>)}
                 </select>
             </div>
-            {isPokedexLoading ? <PageLoader/> : <Pokedex pokedex={pokedex}/> }
+            {isPokedexLoading ? <PageLoader /> : <Pokedex pokedex={pokedex} />}
         </div>
 
     );

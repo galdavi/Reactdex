@@ -10,15 +10,15 @@ import Artwork from "../components/pokemon-details/Artwork";
 import PokedexEntries from "../components/pokemon-details/PokedexEntries";
 import Evolution from "../components/pokemon-details/Evolution";
 import PageLoader from "../components/PageLoader";
-import FetchError from "../components/FetchError";
 import PageTitle from "../components/pokemon-details/PageTitle";
 import usePokemonData from "../usePokemonData";
+import NotFoundPage from "./NotFoundPage";
 
 
 export default function PokemonDetails() {
     const param = useParams();
-    
-    const { state, isLoading, selectPokemonForm } = usePokemonData(POKEMON_SPECIES_API_URL + param.pokemon?.toLowerCase());
+    console.log(param);
+    const { state, isLoading, selectPokemonForm } = usePokemonData(POKEMON_SPECIES_API_URL + param.pokemon?.toLowerCase().replace(/^0+/, ''));
 
     const detailsSectionLayout = "flex flex-col lg:flex-row w-full items-center justify-evenly gap-8 pb-10";
 
@@ -29,7 +29,7 @@ export default function PokemonDetails() {
 
     if (error) {
         return (
-            <FetchError error={error} />
+            <NotFoundPage/>
         );
     }
     if (isLoading || !pokemon || !pokemonSpecies || !evolutionChain || !pokedex) {

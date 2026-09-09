@@ -13,13 +13,15 @@ export default function SearchBar() {
                 e.preventDefault();
                 navigate(`/pokemon-details/${pokemon}`);
             }}
-            className="flex items-center bg-white rounded-md px-2 outline-0 text-secondary">
+            className="flex items-center bg-white rounded-md pl-2 text-secondary">
             <input type="text"
                 id="search-bar"
                 placeholder="Search..."
                 className="outline-none"
                 value={pokemon}
                 onChange={(e) => { setPokemon(e.target.value) }} />
-            <SearchIcon className="w-4 h-4" />
+            <button className="sm:flex items-center h-full px-1 rounded-r-md bg-red-700 hover:bg-red-800 hidden">
+                <SearchIcon className=" text-white w-4 h-4" />
+            </button>
         </form>);
 }

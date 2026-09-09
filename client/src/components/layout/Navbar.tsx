@@ -25,7 +25,7 @@ export default function Navbar() {
                 </button>
                 <div className="hidden sm:flex gap-4    ">
 
-                <Link to="/pokedex"  className="text-sm text-white" reloadDocument>Pokedex</Link>
+                <Link to="/"  className="text-sm text-white" reloadDocument>Pokedex</Link>
                 <Link to="/pokemon-details/bulbasaur"  className="text-sm" reloadDocument>Pokemon Details</Link>
                 <SearchBar/>
                 </div>
@@ -34,13 +34,15 @@ export default function Navbar() {
             {
                 openMenu &&
                 <nav className={mobileNav}>
-                    <Link to="/pokedex"
+                    <Link to="/"
                         className={mobileMenuButton}
                     >Pokedex</Link>
                     <Link to="/pokemon-details/bulbasaur"
                         className={mobileMenuButton}
                     >Pokemon Details</Link>
-                    <button onClick={() => setOpenSearch(prev => !prev)}>Search </button>
+                    <button 
+                        className={mobileMenuButton}
+                    onClick={() => setOpenSearch(prev => !prev)}>Search </button>
                     {openSearch && 
                         <SearchBar/>
                     }
