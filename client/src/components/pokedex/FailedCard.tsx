@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
-import type { PokemonDataError } from "../../types";
 import { ImageOff } from "lucide-react";
 import { formatPokemonID } from "../../helpers/formatters";
 
-
-export default function FailedCard({ id, error }: { id: number, error: PokemonDataError }) {
+ 
+export default function FailedCard({ id}: { id: number}) {
 
 
     return (

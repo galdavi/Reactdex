@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { NATIONAL_POKEDEX_API_URL } from "./constants";
 import type {
-  ErrorState,
   EvolutionChain,
   Pokedex,
   Pokemon,
+  PokemonDataError,
   PokemonSpecies,
 } from "./types";
 
@@ -14,9 +14,10 @@ interface PokemonState {
   pokemon: Pokemon | null;
   formURL: string | null;
   evolutionChain: EvolutionChain | null;
-  error: ErrorState | null;
+  error: PokemonDataError;
 }
 export default function usePokemonData(url: string) {
+  console.log(url);
   const [state, setState] = useState<PokemonState>({
     pokemonSpecies: null,
     pokedex: null,
@@ -31,6 +32,7 @@ export default function usePokemonData(url: string) {
     !state.pokedex ||
     !state.pokemon ||
     !state.evolutionChain;
+
   function selectPokemonForm(newFormURL: string) {
     setState((prev) => ({
       ...prev,
@@ -66,18 +68,16 @@ export default function usePokemonData(url: string) {
       } catch (err) {
         const error =
           err instanceof Error ? err : new Error(`Unexpected error occurred`);
+
         if (error.name === `AbortError`) {
           return;
         }
 
-        const errorType = {
-          title: `Could not load Pokedex data`,
-          message: error.message,
-        };
+        console.error(error);
 
         setState((prev) => ({
           ...prev,
-          error: errorType,
+          error: "error",
         }));
       }
     };
@@ -90,7 +90,6 @@ export default function usePokemonData(url: string) {
   //Pokemon Species
   useEffect(() => {
     const controller = new AbortController();
-
     const fetchSpeciesData = async () => {
       setState((prev) => ({
         ...prev,
@@ -100,6 +99,7 @@ export default function usePokemonData(url: string) {
         evolutionChain: null,
         error: null,
       }));
+
       try {
         const response = await fetch(url, {
           signal: controller.signal,
@@ -121,14 +121,11 @@ export default function usePokemonData(url: string) {
         if (error.name === `AbortError`) {
           return;
         }
-        const errorType = {
-          title: `Could not load Pokemon Species data`,
-          message: error.message,
-        };
 
+        console.error(`Could not load Pokemon Species data. ${error}`);
         setState((prev) => ({
           ...prev,
-          error: errorType,
+          error: "not-found",
         }));
       }
     };
@@ -174,14 +171,11 @@ export default function usePokemonData(url: string) {
         if (error.name === `AbortError`) {
           return;
         }
-        const errorType = {
-          title: `Could not load evolution data`,
-          message: error.message,
-        };
 
+        console.error(`Could not load evolution data ${error}`);
         setState((prev) => ({
           ...prev,
-          error: errorType,
+          error: "error",
         }));
       }
     };
@@ -228,14 +222,11 @@ export default function usePokemonData(url: string) {
         if (error.name === `AbortError`) {
           return;
         }
-        const errorType = {
-          title: `Could not load Pokemon form data`,
-          message: error.message,
-        };
 
+        console.error(`Could not load Pokemon form data. ${error}`);
         setState((prev) => ({
           ...prev,
-          error: errorType,
+          error: "error",
         }));
       }
     };
@@ -243,6 +234,6 @@ export default function usePokemonData(url: string) {
     fetchFormData();
     return () => controller.abort();
   }, [state.formURL]);
-
+  console.log(state.error);
   return { state, isLoading, selectPokemonForm };
 }

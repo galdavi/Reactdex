@@ -8,7 +8,7 @@ export default function Pokedex({ pokedex }: { pokedex: PokedexCardData[] }) {
             {pokedex.map((p) =>
                 !p.isError ?
                     <PokedexCard key={p.id} id={p.id} name={p.species.name} pokemon={p.pokemon!} />
-                    : <FailedCard key={p.id} id={p.id} error={p.error} />
+                    : <FailedCard key={p.id} id={p.id}  />
             )}
         </div>
     );

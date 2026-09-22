@@ -13,7 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<PokedexPage />} />
-          <Route path="pokemon-details/:pokemon" element={<PokemonDetails />} />
+          <Route path="pokemon-details/:pokemonName" element={<PokemonDetails />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

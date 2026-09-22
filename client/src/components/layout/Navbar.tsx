@@ -16,7 +16,7 @@ export default function Navbar() {
             <nav className={navBase}>
                 <div className="flex items-center">
                     <Link to="/" className="text-md">Reactdex</Link>
-                    <img src="/src/assets/pokefun-logo.png" alt="logo"
+                    <img src="/src/assets/logo.png" alt="logo"
                         className="w-16 h-12" />
                 </div>
                 <button onClick={() => setOpenMenu(prev => !prev)}

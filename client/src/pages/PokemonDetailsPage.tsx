@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
 import { POKEMON_SPECIES_API_URL } from "../constants";
-
 import BaseStats from "../components/pokemon-details/BaseStats";
 import TypeDefense from "../components/pokemon-details/TypeDefense";
 import BasicData from "../components/pokemon-details/BasicData";
@@ -12,13 +11,17 @@ import Evolution from "../components/pokemon-details/Evolution";
 import PageLoader from "../components/PageLoader";
 import PageTitle from "../components/pokemon-details/PageTitle";
 import usePokemonData from "../usePokemonData";
+import PokemonNotFound from "../components/pokedex/PokemonNotFound";
 import NotFoundPage from "./NotFoundPage";
 
 
 export default function PokemonDetails() {
     const param = useParams();
-    console.log(param);
-    const { state, isLoading, selectPokemonForm } = usePokemonData(POKEMON_SPECIES_API_URL + param.pokemon?.toLowerCase().replace(/^0+/, ''));
+    let query = param.pokemonName ?? "";
+    query = query.toLowerCase().replace(/0+/, "");
+    const url = POKEMON_SPECIES_API_URL + query;
+
+    const { state, isLoading, selectPokemonForm } = usePokemonData(url);
 
     const detailsSectionLayout = "flex flex-col lg:flex-row w-full items-center justify-evenly gap-8 pb-10";
 
@@ -27,11 +30,20 @@ export default function PokemonDetails() {
         selectPokemonForm(newFormURL);
     }
 
-    if (error) {
+    if (error === "error") {
         return (
-            <NotFoundPage/>
+            <NotFoundPage />
         );
     }
+
+    console.log();
+    if (error === "not-found") {
+        return (
+            <PokemonNotFound query={query} pokedexData={pokedex?.pokemon_entries ?? []}/>
+        );
+    }
+
+
     if (isLoading || !pokemon || !pokemonSpecies || !evolutionChain || !pokedex) {
         return (
             <PageLoader />
