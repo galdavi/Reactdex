@@ -24,7 +24,6 @@ export default function PageLoader() {
 
         return () => clearInterval(interval)
     }, []);
-    console.log(loaderMessages[index])
     return (
         <div className="flex flex-col relative w-full shrink-0 aspect-square items-center pt-24 ">
             <div className="flex items-center justify-center w-full min-w-24 max-w-38 h-full min-h-24 max-h-38

@@ -102,9 +102,9 @@ export default function PageTitle({ name, id, pokedex, varieties, onFormChange }
             <AdjacentPokemon id={nextPokemon.id} name={nextPokemon.name} position="right" />
             <div className="absolute flex flex-col gap-1 bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap
             ">
-                <div className="flex gap-2 font-semibold">
-                    <span className="flex items-end  text-md sm:text-2xl text-secondary">{`#${formatPokemonID(id)}`}</span>
-                    <h1 className="text-lg sm:text-3xl ">{toTitleCase(name)}</h1>
+                <div className="flex items-center justify-center gap-2 font-semibold">
+                    <span className="flex items-end  text-sm sm:text-md md:text-lg text-secondary">{`#${formatPokemonID(id)}`}</span>
+                    <h1 className="text-md sm:text-lg md:text-2xl">{toTitleCase(name)}</h1>
                 </div>
                 {varieties.length > 1 &&
                     <PokemonVarieties
