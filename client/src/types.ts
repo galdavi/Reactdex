@@ -207,9 +207,9 @@ export interface ErrorState {
 export type PokemonDataError = "not-found" | "error" | null;
 export type Content = Array<{ label: string; value: React.ReactNode }>;
 
-//The PokedexCardData type is a union because it allows us
+//The PokedexData type is a union because it allows us
 //to handle the error state properly. 
-export type PokedexCardData =
+export type PokedexData =
     | {
         isError: false;
         id: number;

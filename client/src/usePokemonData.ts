@@ -17,7 +17,6 @@ interface PokemonState {
   error: PokemonDataError;
 }
 export default function usePokemonData(url: string) {
-  console.log(url);
   const [state, setState] = useState<PokemonState>({
     pokemonSpecies: null,
     pokedex: null,
@@ -72,8 +71,6 @@ export default function usePokemonData(url: string) {
         if (error.name === `AbortError`) {
           return;
         }
-
-        console.error(error);
 
         setState((prev) => ({
           ...prev,
@@ -234,6 +231,7 @@ export default function usePokemonData(url: string) {
     fetchFormData();
     return () => controller.abort();
   }, [state.formURL]);
-  console.log(state.error);
+
+
   return { state, isLoading, selectPokemonForm };
 }

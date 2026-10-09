@@ -2,7 +2,7 @@ import type { PokedexCardData } from "../../types";
 import PokedexCard from "./PokedexCard";
 import FailedCard from "./FailedCard";
 
-export default function Pokedex({ pokedex }: { pokedex: PokedexCardData[] }) {
+export default function PokedexViewer({ pokedex }: { pokedex: PokedexCardData[] }) {
     return (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
             {pokedex.map((p) =>

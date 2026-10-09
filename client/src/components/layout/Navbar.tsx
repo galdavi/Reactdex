@@ -26,7 +26,7 @@ export default function Navbar() {
                 <div className="hidden sm:flex gap-4    ">
 
                 <Link to="/"  className="text-sm text-white" reloadDocument>Pokedex</Link>
-                <Link to="/pokemon-details/bulbasaur"  className="text-sm" reloadDocument>Pokemon Details</Link>
+                <Link to="/pokemon-details/"  className="text-sm" reloadDocument>Pokemon Details</Link>
                 <SearchBar/>
                 </div>
             </nav>
@@ -37,7 +37,7 @@ export default function Navbar() {
                     <Link to="/"
                         className={mobileMenuButton}
                     >Pokedex</Link>
-                    <Link to="/pokemon-details/bulbasaur"
+                    <Link to="/pokemon-details"
                         className={mobileMenuButton}
                     >Pokemon Details</Link>
                     <button 

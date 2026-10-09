@@ -3,6 +3,7 @@ import PokedexPage from "./pages/PokedexPage"
 import PokemonDetails from "./pages/PokemonDetailsPage"
 import MainLayout from "./layouts/MainLayout"
 import NotFoundPage from "./pages/NotFoundPage"
+import PokemonIndex from "./pages/PokemonIndex"
 
 
 
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<PokedexPage />} />
+          <Route path="pokemon-details" element={<PokemonIndex/>}/>
           <Route path="pokemon-details/:pokemonName" element={<PokemonDetails />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>

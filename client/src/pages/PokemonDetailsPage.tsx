@@ -35,8 +35,6 @@ export default function PokemonDetails() {
             <NotFoundPage />
         );
     }
-
-    console.log();
     if (error === "not-found") {
         return (
             <PokemonNotFound query={query} pokedexData={pokedex?.pokemon_entries ?? []}/>
