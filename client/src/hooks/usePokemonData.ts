@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { NATIONAL_POKEDEX_API_URL } from "./constants";
+import { NATIONAL_POKEDEX_API_URL } from "../constants";
 import type {
   EvolutionChain,
   Pokedex,
   Pokemon,
   PokemonDataError,
   PokemonSpecies,
-} from "./types";
+} from "../types";
 
-interface PokemonState {
+interface PokemonData {
   pokemonSpecies: PokemonSpecies | null;
   pokedex: Pokedex | null;
   pokemon: Pokemon | null;
@@ -17,7 +17,7 @@ interface PokemonState {
   error: PokemonDataError;
 }
 export default function usePokemonData(url: string) {
-  const [state, setState] = useState<PokemonState>({
+  const [data, setData] = useState<PokemonData>({
     pokemonSpecies: null,
     pokedex: null,
     pokemon: null,
@@ -27,24 +27,24 @@ export default function usePokemonData(url: string) {
   });
 
   const isLoading =
-    !state.pokemonSpecies ||
-    !state.pokedex ||
-    !state.pokemon ||
-    !state.evolutionChain;
+    !data.pokemonSpecies ||
+    !data.pokedex ||
+    !data.pokemon ||
+    !data.evolutionChain;
 
   function selectPokemonForm(newFormURL: string) {
-    setState((prev) => ({
+    setData((prev) => ({
       ...prev,
       formURL: newFormURL,
     }));
   }
 
-  //Pokedex
+  //Pokedex needed to get the adjacent pokemon for the current pokemon being viewed.
   useEffect(() => {
     const controller = new AbortController();
 
     const fetchPokedexData = async () => {
-      setState((prev) => ({
+      setData((prev) => ({
         ...prev,
         pokedex: null,
         error: null,
@@ -60,7 +60,7 @@ export default function usePokemonData(url: string) {
         }
 
         const pokedexData = await response.json();
-        setState((prev) => ({
+        setData((prev) => ({
           ...prev,
           pokedex: pokedexData,
         }));
@@ -72,7 +72,7 @@ export default function usePokemonData(url: string) {
           return;
         }
 
-        setState((prev) => ({
+        setData((prev) => ({
           ...prev,
           error: "error",
         }));
@@ -88,7 +88,7 @@ export default function usePokemonData(url: string) {
   useEffect(() => {
     const controller = new AbortController();
     const fetchSpeciesData = async () => {
-      setState((prev) => ({
+      setData((prev) => ({
         ...prev,
         pokemonSpecies: null,
         pokemon: null,
@@ -107,7 +107,7 @@ export default function usePokemonData(url: string) {
         }
 
         const speciesData = await response.json();
-        setState((prev) => ({
+        setData((prev) => ({
           ...prev,
           pokemonSpecies: speciesData,
           formURL: speciesData.varieties[0].pokemon.url,
@@ -120,7 +120,7 @@ export default function usePokemonData(url: string) {
         }
 
         console.error(`Could not load Pokemon Species data. ${error}`);
-        setState((prev) => ({
+        setData((prev) => ({
           ...prev,
           error: "not-found",
         }));
@@ -136,11 +136,11 @@ export default function usePokemonData(url: string) {
   useEffect(() => {
     const controller = new AbortController();
     const fetchEvolutionData = async () => {
-      const evolutionURL = state.pokemonSpecies?.evolution_chain.url;
+      const evolutionURL = data.pokemonSpecies?.evolution_chain.url;
       if (!evolutionURL) {
         return;
       }
-      setState((prev) => ({
+      setData((prev) => ({
         ...prev,
         evolutionChain: null,
         error: null,
@@ -157,7 +157,7 @@ export default function usePokemonData(url: string) {
 
         const evolutionData = await response.json();
 
-        setState((prev) => ({
+        setData((prev) => ({
           ...prev,
           evolutionChain: evolutionData,
         }));
@@ -170,7 +170,7 @@ export default function usePokemonData(url: string) {
         }
 
         console.error(`Could not load evolution data ${error}`);
-        setState((prev) => ({
+        setData((prev) => ({
           ...prev,
           error: "error",
         }));
@@ -180,25 +180,25 @@ export default function usePokemonData(url: string) {
     fetchEvolutionData();
 
     return () => controller.abort();
-  }, [state.pokemonSpecies]);
+  }, [data.pokemonSpecies]);
 
   //Pokemon Form
   useEffect(() => {
     const controller = new AbortController();
 
     const fetchFormData = async () => {
-      if (!state.formURL) {
+      if (!data.formURL) {
         return;
       }
 
-      setState((prev) => ({
+      setData((prev) => ({
         ...prev,
         pokemon: null,
         error: null,
       }));
 
       try {
-        const response = await fetch(state.formURL, {
+        const response = await fetch(data.formURL, {
           signal: controller.signal,
         });
 
@@ -207,7 +207,7 @@ export default function usePokemonData(url: string) {
         }
 
         const pokemonData = await response.json();
-        setState((prev) => ({
+        setData((prev) => ({
           ...prev,
           pokemon: pokemonData,
           error: null,
@@ -221,7 +221,7 @@ export default function usePokemonData(url: string) {
         }
 
         console.error(`Could not load Pokemon form data. ${error}`);
-        setState((prev) => ({
+        setData((prev) => ({
           ...prev,
           error: "error",
         }));
@@ -230,8 +230,8 @@ export default function usePokemonData(url: string) {
 
     fetchFormData();
     return () => controller.abort();
-  }, [state.formURL]);
+  }, [data.formURL]);
 
 
-  return { state, isLoading, selectPokemonForm };
+  return { data: data, isLoading, selectPokemonForm };
 }

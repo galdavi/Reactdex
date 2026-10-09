@@ -10,7 +10,7 @@ import PokedexEntries from "../components/pokemon-details/PokedexEntries";
 import Evolution from "../components/pokemon-details/Evolution";
 import PageLoader from "../components/PageLoader";
 import PageTitle from "../components/pokemon-details/PageTitle";
-import usePokemonData from "../usePokemonData";
+import usePokemonData from "../hooks/usePokemonData";
 import PokemonNotFound from "../components/pokedex/PokemonNotFound";
 import NotFoundPage from "./NotFoundPage";
 
@@ -21,11 +21,11 @@ export default function PokemonDetails() {
     query = query.toLowerCase().replace(/0+/, "");
     const url = POKEMON_SPECIES_API_URL + query;
 
-    const { state, isLoading, selectPokemonForm } = usePokemonData(url);
+    const { data: pokemonData, isLoading, selectPokemonForm } = usePokemonData(url);
 
     const detailsSectionLayout = "flex flex-col lg:flex-row w-full items-center justify-evenly gap-8 pb-10";
 
-    const { pokemon, pokemonSpecies, evolutionChain, pokedex, error } = state;
+    const { pokemon, pokemonSpecies, evolutionChain, pokedex, error } = pokemonData;
     function handleFormChange(newFormURL: string) {
         selectPokemonForm(newFormURL);
     }
